@@ -1,5 +1,6 @@
 #!/bin/sh
 # written by C. Scott on Nov. 2016
+# updated in March 2018 to include license expiration date
 #
 # This script checks ~/Library/Application Support/com.bohemiancoding.sketch3/.license
 # When in trial mode, the payload definition in .license shows "status":"nok" and "type":"trial"
@@ -26,8 +27,10 @@ if [ -f "$licenseFile" ]; then
          echo "<result>Trial</result>"
       else
          if grep -q 'type\":\"static' "$licenseFile"; then
-            emailAddress=`grep -o 'email.*\.com' "$licenseFile" | cut -c9-`
-            echo "<result>Registered to $emailAddress</result>"
+            emailAddress=`grep -o 'email.*\.[a-z]*' "$licenseFile" | cut -c9-`
+            expirationDateEpoch=`grep -o '"expiration\"\:\"[0-9]*' "$licenseFile" | cut -c15-`
+            expirationDate=`date -r $expirationDateEpoch +"%m-%d-%Y"`
+            echo "<result>Registered to $emailAddress (expires on $expirationDate)</result>"
          fi
    fi
 fi
